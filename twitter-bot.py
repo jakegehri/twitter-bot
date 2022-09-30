@@ -13,19 +13,28 @@ def api():
 
 api = api()
 
-hashtag = "#tesla"
+request = api.mentions_timeline(count = 1)
+hashtag = request[0].entities['hashtags'][0]['text']
+id = request[0].id
+
+print(hashtag)
 
 text = []
 searched_tweets = api.search_tweets(q=hashtag, lang="en", count = 100)
 for tweet in searched_tweets:
     text.append(tweet.text)
 
-print(len(searched_tweets))
-
-print(searched_tweets[1].text)
 
 classifier = pipeline("text-classification")
 
 outputs = classifier(text)
-print(pd.DataFrame(outputs))
 
+df = pd.DataFrame(outputs) 
+
+if df['label'] == "NEGATIVE":
+
+    df['multiplier'] = -1
+else:
+    df['multiplier'] = 1
+
+print(df)
