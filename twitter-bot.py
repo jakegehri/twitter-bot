@@ -3,7 +3,11 @@ import keys
 import pandas as pd
 import numpy as np
 from transformers import pipeline
+from datetime import datetime
 
+now = datetime.now()
+
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 def api():
     auth = tweepy.OAuth1UserHandler(keys.api_key, keys.api_secret)
@@ -17,8 +21,6 @@ request = api.mentions_timeline(count = 1)
 hashtag = request[0].entities['hashtags'][0]['text']
 id = request[0].id
 
-print(hashtag)
-
 text = []
 searched_tweets = api.search_tweets(q=hashtag, lang="en", count = 100)
 for tweet in searched_tweets:
@@ -30,8 +32,6 @@ classifier = pipeline("text-classification")
 outputs = classifier(text)
 
 df = pd.DataFrame(outputs) 
-
-print(df)
 
 counter = 0
 df['multiplier'] = 0
@@ -47,4 +47,11 @@ df['weighted'] = df['score'] * df['multiplier']
 
 sentiment_score = np.mean((df['weighted']))
 
-print(sentiment_score)
+if sentiment_score > 0:
+    sentiment = "POSITIVE"
+else:
+    sentiment = "NEGATIVE"
+
+reply = 'On ' + dt_string + ', #' + hashtag + ' has a ' + sentiment + ' sentiment.' + f' (score: {sentiment_score})'
+
+api.update_status(status=reply, in_reply_to_status_id = id)
