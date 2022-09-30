@@ -31,10 +31,20 @@ outputs = classifier(text)
 
 df = pd.DataFrame(outputs) 
 
-if df['label'] == "NEGATIVE":
-
-    df['multiplier'] = -1
-else:
-    df['multiplier'] = 1
-
 print(df)
+
+counter = 0
+df['multiplier'] = 0
+for i in df['label']:
+    
+    if i == "NEGATIVE":
+        df['multiplier'][counter] = -1
+    else:
+        df['multiplier'][counter] = 1
+    counter += 1
+    
+df['weighted'] = df['score'] * df['multiplier']
+
+sentiment_score = np.mean((df['weighted']))
+
+print(sentiment_score)
