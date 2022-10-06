@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from transformers import pipeline
 from datetime import datetime
+import time
 
 
 
@@ -31,30 +32,57 @@ def store_last_seen(FILE_NAME, last_seen_id):
     file_write.close()
     return
 
+classifier = pipeline("text-classification", model = "jakegehri/twitter-emotion-classifier-BERT")
+
 tweets = api.mentions_timeline()
 
+tweet_id = str(tweets[0].id)
 
-for tweet in reversed(tweets):
-    print(str(tweet.id) + " - " + tweet.text)
-    api.update_status(status = ("@" + tweet.user.screen_name + " hello ", tweet.id), 
-    in_reply_to_status_id = read_last_seen(FILE_NAME))
-    store_last_seen(FILE_NAME, tweet.id)
+last_seen = read_last_seen(FILE_NAME)
+
+store_last_seen(FILE_NAME, tweet_id)
+
+
+def get_hashtag(tweets):
+    try:
+        return tweets[0].entities['hashtags'][0]['text']
+    except IndexError:
+        return None
+
+tweet_hashtag = get_hashtag(tweets)
 
 """
-hashtag = tweets[0].entities['hashtags'][0]['text']
-id = tweets[0].id
+while True:
+    time.sleep(5)
+    tweets = api.mentions_timeline()
+    tweet_id = str(tweets[0].id)
+    tweet_text = tweets[0].text
+    tweet_hashtag = get_hashtag(tweets)
+    last_seen = read_last_seen(FILE_NAME)
+    if tweet_id != last_seen:
+        text = []
+        searched_tweets = api.search_tweets(q=hashtag, lang="en", count = 100)
+        for tweet in searched_tweets:
+            text.append(tweet.text)
+        store_last_seen(FILE_NAME, tweet_id)
+    else:
+        continue
+"""
+
 
 text = []
-searched_tweets = api.search_tweets(q=hashtag, lang="en", count = 100)
+searched_tweets = api.search_tweets(q=tweet_hashtag, lang="en", count = 100)
 for tweet in searched_tweets:
     text.append(tweet.text)
 
+outputs = classifier(text, top_k=6)
 
-classifier = pipeline("text-classification")
+df = pd.DataFrame(outputs)
 
-outputs = classifier(text)
+print(df[0][0])
 
-df = pd.DataFrame(outputs) 
+"""
+
 
 counter = 0
 df['multiplier'] = 0
