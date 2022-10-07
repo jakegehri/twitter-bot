@@ -1,5 +1,4 @@
 import os
-import secrets
 from ssl import ALERT_DESCRIPTION_UNKNOWN_PSK_IDENTITY
 import tweepy
 from dotenv import load_dotenv
@@ -59,6 +58,7 @@ tweet_hashtag = get_hashtag(tweets)
 
 labels = {"LABEL_0" : "sadness", "LABEL_1" : "joy", "LABEL_2" : "love", 
         "LABEL_3" : "anger", "LABEL_4" : "fear", "LABEL_5" : "surprise"}
+
 
 while True:
     time.sleep(5)
