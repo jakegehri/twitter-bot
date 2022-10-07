@@ -38,7 +38,6 @@ gym==0.24.1
 gym-notices==0.0.7
 h5py==3.7.0
 halo==0.0.31
-heroku==0.1.4
 huggingface-hub==0.9.1
 idna==3.3
 importlib-metadata==4.12.0
