@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 from transformers import pipeline
-from datetime import datetime
 import time
 
 load_dotenv()
@@ -14,10 +13,6 @@ API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 ACCESS_SECRET = os.getenv("ACCESS_SECRET")
-
-now = datetime.now()
-
-dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
